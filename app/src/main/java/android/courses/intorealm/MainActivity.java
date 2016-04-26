@@ -1,5 +1,6 @@
 package android.courses.intorealm;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -40,20 +41,31 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, AddUser.class);
+                startActivity(intent);
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
         realmConfig = new RealmConfiguration.Builder(this).build();
+        //Realm.deleteRealm(realmConfig);
+        // Set the default Realm configuration at the beginning.
+        Realm.setDefaultConfiguration(realmConfig);
         // Get a realm instance for this thread
-        realm = Realm.getInstance(realmConfig);
+        realm = Realm.getDefaultInstance();
+//        realm = Realm.getInstance(realmConfig);
 
-        List<User> users = allUsers();
+        RealmResults<User> users = allUsers();
         Log.d(TAG, "users queried" +users);
+//        Log.d(TAG, "users queried" +users.get(0).getFirstName());
 
+        final UserAdapter adapter = new UserAdapter(this, R.id.listView, users, true);
         mListView = (ListView) findViewById(R.id.listView);
-        ArrayAdapter<User> adapter = new ArrayAdapter<User>(MainActivity.this, android.R.layout.simple_list_item_1, users);
+        mListView.setAdapter(adapter);
+
+//        ArrayAdapter<User> adapter = new ArrayAdapter<User>(MainActivity.this, android.R.layout.simple_list_item_1, users);
+//        mListView.setAdapter(adapter);
 
     }
 
@@ -79,29 +91,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void saveUser(View view) {
-        EditText edit_fname = (EditText) findViewById(R.id.edit_fname);
-        EditText edit_lname = (EditText) findViewById(R.id.edit_lname);
-
-        String firstName = edit_fname.getText().toString();
-        String lastName = edit_lname.getText().toString();
-
-        // All writes must be wrapped in a transaction to facilitate safe multi threading
-        realm.beginTransaction();
-
-        User user = realm.createObject(User.class);
-        user.setId(1);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-
-        // When the transaction is committed, all changes a synced to disk.
-        realm.commitTransaction();
-
-        Log.d(TAG, "User inserted.");
-
-    }
-
-    private List<User> allUsers() {
+    private RealmResults<User> allUsers() {
         RealmResults<User> users = realm.where(User.class).findAll();
 
         return users;

@@ -11,6 +11,7 @@ public class User extends RealmObject {
     private int id;
     private String firstName;
     private String lastName;
+    private int color;
 
     public int getId() {
         return id;
@@ -34,5 +35,13 @@ public class User extends RealmObject {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }
