@@ -1,12 +1,11 @@
-package android.courses.intorealm;
+package android.courses.intorealm.activities;
 
 import android.content.Intent;
+import android.courses.intorealm.R;
+import android.courses.intorealm.models.User;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 

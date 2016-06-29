@@ -1,4 +1,4 @@
-package android.courses.intorealm;
+package android.courses.intorealm.models;
 
 
 import io.realm.RealmObject;

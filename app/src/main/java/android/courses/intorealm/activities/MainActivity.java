@@ -1,6 +1,12 @@
-package android.courses.intorealm;
+package android.courses.intorealm.activities;
 
 import android.content.Intent;
+import android.courses.intorealm.R;
+import android.courses.intorealm.db.DbManager;
+import android.courses.intorealm.interfaces.GithubService;
+import android.courses.intorealm.models.Repo;
+import android.courses.intorealm.models.User;
+import android.courses.intorealm.adapters.UserAdapter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,19 +16,24 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
+import java.util.List;
+
 import io.realm.RealmResults;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
 
-    private Realm realm;
-    private RealmConfiguration realmConfig;
 
     private ListView mListView;
+
+    private GithubService api;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,24 +53,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        realmConfig = new RealmConfiguration.Builder(this).build();
-        //Realm.deleteRealm(realmConfig);
-        // Set the default Realm configuration at the beginning.
-        Realm.setDefaultConfiguration(realmConfig);
-        // Get a realm instance for this thread
-        realm = Realm.getDefaultInstance();
-//        realm = Realm.getInstance(realmConfig);
 
-        RealmResults<User> users = allUsers();
-        Log.d(TAG, "users queried" +users);
-//        Log.d(TAG, "users queried" +users.get(0).getFirstName());
+        dbManager = DbManager.getInstance(this);
+        RealmResults<User> users = dbManager.allUsers();
+        Log.d(TAG, "users queried" + users);
 
         final UserAdapter adapter = new UserAdapter(this, R.id.listView, users, true);
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(adapter);
 
-//        ArrayAdapter<User> adapter = new ArrayAdapter<User>(MainActivity.this, android.R.layout.simple_list_item_1, users);
-//        mListView.setAdapter(adapter);
+
+        getUserRepos();
 
     }
 
@@ -85,9 +89,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private RealmResults<User> allUsers() {
-        RealmResults<User> users = realm.where(User.class).findAll();
 
-        return users;
+    //
+    private void getUserRepos() {
+        api = DbManager.getApi();
+        api.listReposAsync("podisto", new Callback<List<Repo>>() {
+            @Override
+            public void success(List<Repo> repos, Response response) {
+                afficherRepos(repos);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+    //
+    private void afficherRepos(List<Repo> repos) {
+        Toast.makeText(this, "nombre de repos : " + repos.size(), Toast.LENGTH_SHORT).show();
     }
 }

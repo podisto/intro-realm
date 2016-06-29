@@ -1,6 +1,8 @@
-package android.courses.intorealm;
+package android.courses.intorealm.adapters;
 
 import android.content.Context;
+import android.courses.intorealm.R;
+import android.courses.intorealm.models.User;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
